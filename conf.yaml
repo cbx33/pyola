@@ -1,0 +1,38 @@
+fixtures:
+  light1:
+    start_address: 1
+    address_length: 16
+  light2:
+    start_address: 17
+    address_length: 16
+  light3:
+    start_address: 33
+    address_length: 16
+  light4:
+    start_address: 47
+    address_length: 16
+scenes:
+  scene1:
+    fixtures:
+      light1:
+        values:
+          1: 1
+          2: 2
+          3: 3
+      light2:
+        values:
+          5: 100
+          6: 200
+          7: 300
+  scene2:
+    fixtures:
+      light1:
+        values:
+          1: 100
+          2: 200
+          3: 230
+      light2:
+        values:
+          8: 200
+          9: 220
+          10: 230
