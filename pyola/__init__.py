@@ -3,6 +3,7 @@ from objects import FadeScene
 import array
 import time
 from ola.ClientWrapper import ClientWrapper
+from Tkinter import *
 
 wrapper = ClientWrapper()
 
@@ -39,6 +40,7 @@ class Manager(object):
             time.sleep(.1)
 
 if __name__ == "__main__":
+    Tk()
     manager = Manager()
     trans_scene = FadeScene("fade", manager, manager.scenes['scene1'], manager.scenes['scene2'], 3)
     manager.set_scene(trans_scene)
