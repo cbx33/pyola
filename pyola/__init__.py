@@ -38,7 +38,6 @@ class Manager(object):
 
 
             for fixture_name, fixture in self.fixtures.iteritems():
-                print fixture.values
                 for chan, value in fixture.values.iteritems():
                     chan_value = self.fixtures[fixture.name].chans[chan]
                     rdata[fixture.start_address + chan_value - 2] = value
