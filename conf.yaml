@@ -1,38 +1,50 @@
+fixture_types:
+  light:
+    address_length: 8
+    chans:
+      pan: 1
+      tilt: 2
+      spd: 3
+      bright: 4
+      red: 5
+      green: 6
+      blue: 7
+      white: 8
 fixtures:
   light1:
+    type: light
     start_address: 1
-    address_length: 16
   light2:
+    type: light
     start_address: 17
-    address_length: 16
   light3:
+    type: light
     start_address: 33
-    address_length: 16
   light4:
+    type: light
     start_address: 47
-    address_length: 16
 scenes:
   scene1:
     fixtures:
       light1:
         values:
-          1: 1
-          2: 2
-          3: 3
+          pan: 1
+          tilt: 2
+          spd: 3
       light2:
         values:
-          5: 100
-          6: 200
-          7: 230
+          red: 100
+          green: 200
+          blue: 230
   scene2:
     fixtures:
       light1:
         values:
-          1: 100
-          2: 200
-          3: 230
+          pan: 100
+          tilt: 200
+          spd: 230
       light2:
         values:
-          8: 200
-          9: 220
-          10: 230
+          red: 200
+          green: 220
+          blue: 230

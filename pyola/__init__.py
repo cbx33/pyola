@@ -1,4 +1,4 @@
-from conf import load_fixtures, load_scenes
+from conf import load_fixtures, load_scenes, load_fixture_types
 from objects import FadeScene
 import array
 import time
@@ -15,7 +15,8 @@ def DmxSent(state):
 
 class Manager(object):
     def __init__(self):
-        self.fixtures = load_fixtures()
+        self.fixture_types = load_fixture_types()
+        self.fixtures = load_fixtures(self.fixture_types)
         self.scenes = load_scenes(self)
         self.current_scene = None
 
@@ -28,14 +29,19 @@ class Manager(object):
             rdata = array.array('B')
             for i in range(0, 512):
                 rdata.append(0)
+
             # Use the scene to set the fixtures values
-            for fixture_name, fixture in self.current_scene.fixtures.iteritems():
-                for chan, value in fixture.iteritems():
-                    self.fixtures[fixture_name].values[chan - 1] = value
+            for fixture, values in self.current_scene.fixtures.iteritems():
+                for chan, value in values.iteritems():
+                    #chan_value = self.fixtures[fixture.name].chans[chan]
+                    self.fixtures[fixture.name].values[chan] = value
+
 
             for fixture_name, fixture in self.fixtures.iteritems():
-                for i, value in enumerate(fixture.values):
-                    rdata[fixture.start_address + i - 1] = value
+                print fixture.values
+                for chan, value in fixture.values.iteritems():
+                    chan_value = self.fixtures[fixture.name].chans[chan]
+                    rdata[fixture.start_address + chan_value - 2] = value
             wrapper.Client().SendDmx(1, rdata, DmxSent)
             time.sleep(.1)
 
