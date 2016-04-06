@@ -28,23 +28,23 @@ scenes:
     fixtures:
       light1:
         values:
-          pan: 1
-          tilt: 2
-          spd: 3
+          pan: 0
+          tilt: 0
+          spd: 0
       light2:
         values:
-          red: 100
-          green: 200
-          blue: 230
+          red: 0
+          green: 0
+          blue: 0
   scene2:
     fixtures:
       light1:
         values:
-          pan: 100
-          tilt: 200
-          spd: 230
+          pan: 255
+          tilt: 255
+          spd: 255
       light2:
         values:
-          red: 200
-          green: 220
-          blue: 230
+          red: 255
+          green: 255
+          blue: 255

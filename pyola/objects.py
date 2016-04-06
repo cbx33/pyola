@@ -60,9 +60,9 @@ class FadeScene(TransitionScene):
         else:
             combined_fixtures = {}
             for fixture, fixture_values in self.start_scene.fixtures.iteritems():
-                combined_fixtures[fixture] = fixture_values
+                combined_fixtures[fixture] = fixture_values.copy()
             for fixture, fixture_values in self.end_scene.fixtures.iteritems():
-                if not fixture in combined_fixtures:
+                if fixture not in combined_fixtures:
                     combined_fixtures[fixture] = {}
                 if fixture in self.start_scene.fixtures:
                     for chan, value in fixture_values.iteritems():

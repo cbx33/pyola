@@ -38,6 +38,7 @@ class Manager(object):
 
 
             for fixture_name, fixture in self.fixtures.iteritems():
+                print fixture.values
                 for chan, value in fixture.values.iteritems():
                     chan_value = self.fixtures[fixture.name].chans[chan]
                     rdata[fixture.start_address + chan_value - 2] = value
@@ -47,6 +48,6 @@ class Manager(object):
 if __name__ == "__main__":
     Tk()
     manager = Manager()
-    trans_scene = FadeScene("fade", manager, manager.scenes['scene1'], manager.scenes['scene2'], 3)
+    trans_scene = FadeScene("fade", manager, manager.scenes['scene1'], manager.scenes['scene2'], 10)
     manager.set_scene(trans_scene)
     manager.run()
