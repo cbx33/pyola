@@ -1,5 +1,5 @@
 import yaml
-from objects import Scene, Fixture, Modifier, FixtureType
+from objects import Scene, Fixture, FixtureType, mod_map
 
 
 CONFIG_FILE = "conf.yaml"
@@ -10,6 +10,10 @@ def load_data():
     return data
 
 CONFIG = load_data()
+
+
+def load_default_scene():
+    return CONFIG['start_scene']
 
 
 def load_fixture_types():
@@ -31,8 +35,15 @@ def load_fixtures(fixture_types):
 
 def load_scenes(manager):
     scenes = {}
-    for scene, data in CONFIG['scenes'].iteritems():
-        scenes[scene] = Scene(scene, manager)
+    for scene_name, data in CONFIG['scenes'].iteritems():
+        scene = Scene(scene_name, manager)
+        scenes[scene_name] = scene
         for fixture, fvalues in data['fixtures'].iteritems():
-            scenes[scene].add_fixture(manager.fixtures[fixture], fvalues['values'])
+            scene.add_fixture(manager.fixtures[fixture], fvalues['values'])
+        if 'modifiers' in data:
+            for modifier, m_data in data['modifiers'].iteritems():
+                scene.modifiers.append(
+                    mod_map[m_data['type']](modifier, scene, m_data)
+                )
+
     return scenes

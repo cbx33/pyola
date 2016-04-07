@@ -1,4 +1,4 @@
-from conf import load_fixtures, load_scenes, load_fixture_types
+from conf import load_fixtures, load_scenes, load_fixture_types, load_default_scene
 from objects import FadeScene
 import array
 from ola.ClientWrapper import ClientWrapper
@@ -21,11 +21,19 @@ class Manager(object):
         self.fixture_types = load_fixture_types()
         self.fixtures = load_fixtures(self.fixture_types)
         self.scenes = load_scenes(self)
-        self.current_scene = None
+        self.set_scene(self.scenes[load_default_scene()])
 
-    def set_scene(self, scene):
+    def set_scene(self, scene, reset=True):
         self.current_scene = scene
-        self.current_scene.reset()
+        if reset:
+            self.current_scene.reset()
+        if hasattr(self, 'win'):
+            source = self.win.builder.get_object('source')
+            model = source.get_model()
+            for i, item in enumerate(model):
+                if item[0] == self.current_scene.name:
+                    source.set_active(i)
+
 
     def run(self):
         rdata = array.array('B')
@@ -71,6 +79,10 @@ class MyWindow(Gtk.Window):
         renderer_text = Gtk.CellRendererText()
         source.pack_start(renderer_text, True)
         source.add_attribute(renderer_text, "text", 0)
+        for i, item in enumerate(source_store):
+            if item[0] == self.manager.current_scene.name:
+                source.set_active(i)
+
 
         destination_store = Gtk.ListStore(str)
         scenes = manager.scenes.keys()
@@ -107,6 +119,7 @@ class MyWindow(Gtk.Window):
 if __name__ == "__main__":
     manager = Manager()
     win = MyWindow(manager)
-    manager.set_scene(manager.scenes['black'])
+    manager.win = win
+    #manager.set_scene(manager.scenes['black'])
     GObject.timeout_add(10, manager.run)
     Gtk.main()

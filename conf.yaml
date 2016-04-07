@@ -1,3 +1,4 @@
+start_scene: scene2
 fixture_types:
   light:
     address_length: 8
@@ -42,7 +43,8 @@ scenes:
     fixtures:
       light1:
         values:
-          tilt: 30
+          pan: 20
+          tilt: 50
           bright: 255
           red: 34
           green: 52
@@ -50,11 +52,29 @@ scenes:
       light2:
         values:
           pan: 0
+    modifiers:
+      slow_tilt:
+        type: sin
+        freq: 10
+        amp: 20
+        fixtures:
+          light1:
+            - tilt
+            - red
+      slow_pan:
+        type: cos
+        freq: 10
+        amp: 5
+        fixtures:
+          light1:
+            - pan
+            - green
   scene3:
     fixtures:
       light1:
         values:
-          tilt: 30
+          pan: 5
+          tilt: 50
           bright: 255
           red: 225
           green: 52

@@ -1,4 +1,12 @@
 import time
+import math
+
+
+def cap(value):
+    val = abs(value)
+    if val > 255:
+        val = 255
+    return int(val)
 
 
 class FixtureType(object):
@@ -28,7 +36,7 @@ class Scene(object):
         self.data = data
         self.modifiers = []
         self.start_time = 0
-        self.fixtures = {}
+        self.base_fixtures = {}
 
     def add_fixture(self, fixture, values):
         self.fixtures[fixture] = values
@@ -36,6 +44,25 @@ class Scene(object):
     def reset(self):
         self.start_time = time.time()
 
+    @property
+    def fixtures(self):
+        if not self.modifiers:
+            return self.base_fixtures
+        else:
+            fixtures = {}
+            for fixture, values in self.base_fixtures.iteritems():
+                fixtures[fixture] = {}
+                for chan, value in values.copy().iteritems():
+                    fixtures[fixture][chan] = value
+            for fixture, values in fixtures.iteritems():
+                for chan, value in values.copy().iteritems():
+                    for modifier in self.modifiers:
+                        if fixture.name in modifier.fixtures:
+                            for channel in modifier.fixtures[fixture.name]:
+                                if channel == chan:
+                                    fixtures[fixture][chan] = modifier.calc_value(value)
+                                    #re calc value
+            return fixtures
 
 class TransitionScene(Scene):
     def __init__(self, name, manager, start_scene, end_scene, timeout=30):
@@ -48,15 +75,41 @@ class TransitionScene(Scene):
 
 
 class Modifier(object):
-    def __init__(self, name):
+    def __init__(self, name, scene):
         self.name = name
+        self.scene = scene
+
+
+class SineModifier(Modifier):
+    def __init__(self, name, scene, data):
+        self.name = name
+        self.scene = scene
+        self.amp = data['amp']
+        self.freq = data['freq']
+        self.fixtures = data['fixtures']
+
+    def calc_value(self, value):
+        new_value = self.amp * math.sin(self.freq + (time.time() - self.scene.start_time))
+        return cap(value + new_value)
+
+class CosineModifier(Modifier):
+    def __init__(self, name, scene, data):
+        self.name = name
+        self.scene = scene
+        self.amp = data['amp']
+        self.freq = data['freq']
+        self.fixtures = data['fixtures']
+
+    def calc_value(self, value):
+        new_value = self.amp * math.cos(self.freq + (time.time() - self.scene.start_time))
+        return cap(value + new_value)
 
 
 class FadeScene(TransitionScene):
     @property
     def fixtures(self):
         if time.time() - self.start_time > self.timeout:
-            self.manager.set_scene(self.end_scene)
+            self.manager.set_scene(self.end_scene, reset=False)
         else:
             combined_fixtures = {}
             for fixture, fixture_values in self.start_scene.fixtures.iteritems():
@@ -93,3 +146,8 @@ class FadeScene(TransitionScene):
                         combined_fixtures[fixture][chan] = int(y)
             return combined_fixtures
         return self.end_scene.fixtures
+
+mod_map = {
+    'sin': SineModifier,
+    'cos': CosineModifier
+}
