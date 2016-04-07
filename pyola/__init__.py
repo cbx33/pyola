@@ -43,11 +43,11 @@ class Manager(object):
                     chan_value = self.fixtures[fixture.name].chans[chan]
                     rdata[fixture.start_address + chan_value - 2] = value
             wrapper.Client().SendDmx(1, rdata, DmxSent)
-            time.sleep(.1)
+            time.sleep(.01)
 
 if __name__ == "__main__":
     Tk()
     manager = Manager()
-    trans_scene = FadeScene("fade", manager, manager.scenes['scene1'], manager.scenes['scene2'], 10)
+    trans_scene = FadeScene("fade", manager, manager.scenes['scene1'], manager.scenes['scene2'], 5)
     manager.set_scene(trans_scene)
     manager.run()
