@@ -89,7 +89,7 @@ class SineModifier(Modifier):
         self.fixtures = data['fixtures']
 
     def calc_value(self, value):
-        new_value = self.amp * math.sin(self.freq + (time.time() - self.scene.start_time))
+        new_value = self.amp * math.sin(self.freq * (time.time() - self.scene.start_time))
         return cap(value + new_value)
 
 class CosineModifier(Modifier):
@@ -101,7 +101,7 @@ class CosineModifier(Modifier):
         self.fixtures = data['fixtures']
 
     def calc_value(self, value):
-        new_value = self.amp * math.cos(self.freq + (time.time() - self.scene.start_time))
+        new_value = self.amp * math.cos(self.freq * (time.time() - self.scene.start_time))
         return cap(value + new_value)
 
 
