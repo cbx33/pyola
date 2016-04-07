@@ -24,7 +24,7 @@ fixtures:
     type: light
     start_address: 47
 scenes:
-  scene1:
+  black:
     fixtures:
       light1:
         values:
@@ -47,6 +47,18 @@ scenes:
           red: 34
           green: 52
           blue: 224
+      light2:
+        values:
+          pan: 0
+  scene3:
+    fixtures:
+      light1:
+        values:
+          tilt: 30
+          bright: 255
+          red: 225
+          green: 52
+          blue: 140
       light2:
         values:
           pan: 0
