@@ -44,6 +44,14 @@ class Scene(object):
 
     def reset(self):
         self.start_time = time.time()
+        if hasattr(self, 'modifiers'):
+            for modifier in self.modifiers:
+                modifier.start_time = self.start_time
+        if hasattr(self, 'base_fixtures'):
+            for fixture, values in self.base_fixtures.iteritems():
+                for chan, value in values.iteritems():
+                    if not isinstance(value, int):
+                        value.start_time = self.start_time
 
     @property
     def fixtures(self):
@@ -74,21 +82,27 @@ class TransitionScene(Scene):
         self.manager = manager
         self.start_scene = start_scene
         self.end_scene = end_scene
+        self.end_scene.reset()
         self.start_time = 0
         self.timeout = timeout
 
 
 class Modifier(object):
     def __init__(self, name, scene, data, mode="local"):
+        self.start_time = 0
         self.name = name
         self.scene = scene
         self.data = data
         self.mode = mode
+        self.timeout = data.get('timeout', None)
         self.initial = data.get('initial', None)
         if self.mode == "global":
             self.fixtures = data['fixtures']
 
     def calc_value(self, value=0):
+        if self.timeout:
+            if time.time() - self.start_time > self.timeout:
+                self.start_time = time.time()
         if self.initial:
             value = self.initial
         nval = self.calculate()
@@ -102,7 +116,7 @@ class SineModifier(Modifier):
         self.freq = self.data['freq']
 
     def calculate(self):
-        return self.amp * math.sin(self.freq * (time.time() - self.scene.start_time))
+        return self.amp * math.sin(self.freq * (time.time() - self.start_time))
 
 
 class CosineModifier(Modifier):
@@ -112,7 +126,7 @@ class CosineModifier(Modifier):
         self.freq = self.data['freq']
 
     def calculate(self):
-        return self.amp * math.cos(self.freq * (time.time() - self.scene.start_time))
+        return self.amp * math.cos(self.freq * (time.time() - self.start_time))
 
 
 class WaypointModifier(Modifier):
@@ -124,7 +138,7 @@ class WaypointModifier(Modifier):
         self.rep = scipy.interpolate.splrep(self.x, self.y, s=0)
 
     def calculate(self):
-        return scipy.interpolate.splev([time.time() - self.scene.start_time], self.rep, der=0)[0]
+        return scipy.interpolate.splev([time.time() - self.start_time], self.rep, der=0)[0]
 
 
 class FadeScene(TransitionScene):
