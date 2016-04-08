@@ -42,7 +42,7 @@ class Scene(object):
         self.timeout = self.raw_data.get('timeout', None)
 
     def add_fixture(self, fixture, values):
-        self.fixtures[fixture] = values
+        self.base_fixtures[fixture] = values
 
     def reset(self):
         print "RESETTING"
@@ -61,17 +61,17 @@ class Scene(object):
         if self.timeout:
             if time.time() - self.start_time > self.timeout:
                 self.reset()
-        if not self.modifiers:
-            return self.base_fixtures
-        else:
-            fixtures = {}
-            for fixture, values in self.base_fixtures.iteritems():
-                fixtures[fixture] = {}
-                for chan, value in values.copy().iteritems():
-                    if isinstance(value, int):
-                        fixtures[fixture][chan] = value
-                    else:
-                        fixtures[fixture][chan] = value.calc_value()
+        fixtures = self.base_fixtures.copy()
+        for fixture, values in self.base_fixtures.iteritems():
+            print fixtures, "kk"
+            fixtures[fixture] = {}
+            for chan, value in values.copy().iteritems():
+                if isinstance(value, int):
+                    fixtures[fixture][chan] = value
+                else:
+                    fixtures[fixture][chan] = value.calc_value()
+        print fixtures
+        if self.modifiers:
             for fixture, values in fixtures.iteritems():
                 for chan, value in values.copy().iteritems():
                     for modifier in self.modifiers:
@@ -79,8 +79,7 @@ class Scene(object):
                             for channel in modifier.fixtures[fixture.name]:
                                 if channel == chan:
                                     fixtures[fixture][chan] = modifier.calc_value(value)
-            print fixtures
-            return fixtures
+        return fixtures
 
 
 class TransitionScene(Scene):
