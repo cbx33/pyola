@@ -63,14 +63,12 @@ class Scene(object):
                 self.reset()
         fixtures = self.base_fixtures.copy()
         for fixture, values in self.base_fixtures.iteritems():
-            print fixtures, "kk"
             fixtures[fixture] = {}
             for chan, value in values.copy().iteritems():
                 if isinstance(value, int):
                     fixtures[fixture][chan] = value
                 else:
                     fixtures[fixture][chan] = value.calc_value()
-        print fixtures
         if self.modifiers:
             for fixture, values in fixtures.iteritems():
                 for chan, value in values.copy().iteritems():
