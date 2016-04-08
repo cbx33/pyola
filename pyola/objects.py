@@ -45,6 +45,7 @@ class Scene(object):
         self.fixtures[fixture] = values
 
     def reset(self):
+        print "RESETTING"
         self.start_time = time.time()
         if hasattr(self, 'modifiers'):
             for modifier in self.modifiers:
@@ -57,8 +58,9 @@ class Scene(object):
 
     @property
     def fixtures(self):
-        if time.time() - self.start_time > self.timeout:
-            self.reset()
+        if self.timeout:
+            if time.time() - self.start_time > self.timeout:
+                self.reset()
         if not self.modifiers:
             return self.base_fixtures
         else:
@@ -77,6 +79,7 @@ class Scene(object):
                             for channel in modifier.fixtures[fixture.name]:
                                 if channel == chan:
                                     fixtures[fixture][chan] = modifier.calc_value(value)
+            print fixtures
             return fixtures
 
 

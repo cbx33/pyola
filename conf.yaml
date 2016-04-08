@@ -1,4 +1,4 @@
-start_scene: scene2
+start_scene: wild_scene
 fixture_types:
   light:
     address_length: 8
@@ -89,7 +89,7 @@ scenes:
         values:
           pan: 5
           tilt: 50
-          bright: 0
+          bright: 255
           spd: 20
           red: 225
           green: 52
