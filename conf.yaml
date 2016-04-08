@@ -44,10 +44,10 @@ scenes:
       light1:
         values:
           spd: 20
-          pan: 20
+          pan: {'type': 'waypoint', 'points': [[0,125],[5,255],[10,125],[15,0]], 'initial': 0}
           tilt: 50
-          bright: 255
-          red: 34
+          bright: {'type': 'waypoint', 'points': [[0,125],[5,255],[10,125],[15,0]], 'initial': 0, 'loop': 15}
+          red: {'type': 'sin', 'freq': 1, 'amp': 20, 'initial': 30}
           green: 52
           blue: 224
       light2:
@@ -61,14 +61,12 @@ scenes:
         fixtures:
           light1:
             - tilt
-            - red
       slow_pan:
         type: cos
         freq: 1
         amp: 5
         fixtures:
           light1:
-            - pan
             - green
   scene3:
     fixtures:

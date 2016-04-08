@@ -39,11 +39,16 @@ def load_scenes(manager):
         scene = Scene(scene_name, manager)
         scenes[scene_name] = scene
         for fixture, fvalues in data['fixtures'].iteritems():
-            scene.add_fixture(manager.fixtures[fixture], fvalues['values'])
+            new_values = {}
+            for chan, value in fvalues['values'].iteritems():
+                if isinstance(value, int):
+                    new_values[chan] = value
+                else:
+                    new_values[chan] = mod_map[value['type']]("{}-{}-{}".format(scene, fixture, chan), scene, value)
+            scene.add_fixture(manager.fixtures[fixture], new_values)
         if 'modifiers' in data:
             for modifier, m_data in data['modifiers'].iteritems():
                 scene.modifiers.append(
-                    mod_map[m_data['type']](modifier, scene, m_data)
+                    mod_map[m_data['type']](modifier, scene, m_data, mode="global")
                 )
-
     return scenes
