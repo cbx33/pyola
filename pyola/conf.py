@@ -19,7 +19,9 @@ def load_default_scene():
 def load_fixture_types():
     fixture_types = {}
     for fixture_type, values in CONFIG['fixture_types'].iteritems():
-        fixture_types[fixture_type] = FixtureType(fixture_type, values['address_length'], values['chans'])
+        fixture_types[fixture_type] = FixtureType(
+            fixture_type, values['address_length'], values['chans']
+        )
     return fixture_types
 
 
@@ -44,7 +46,8 @@ def load_scenes(manager):
                 if isinstance(value, int):
                     new_values[chan] = value
                 else:
-                    new_values[chan] = mod_map[value['type']]("{}-{}-{}".format(scene, fixture, chan), scene, value)
+                    new_values[chan] = mod_map[value['type']](
+                        "{}-{}-{}".format(scene, fixture, chan), scene, value)
             scene.add_fixture(manager.fixtures[fixture], new_values)
         if 'modifiers' in data:
             for modifier, m_data in data['modifiers'].iteritems():

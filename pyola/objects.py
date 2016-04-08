@@ -65,8 +65,8 @@ class Scene(object):
                             for channel in modifier.fixtures[fixture.name]:
                                 if channel == chan:
                                     fixtures[fixture][chan] = modifier.calc_value(value)
-                                    #re calc value
             return fixtures
+
 
 class TransitionScene(Scene):
     def __init__(self, name, manager, start_scene, end_scene, timeout=30):
@@ -79,17 +79,10 @@ class TransitionScene(Scene):
 
 
 class Modifier(object):
-    def __init__(self, name, scene):
-        self.name = name
-        self.scene = scene
-
-
-class SineModifier(Modifier):
     def __init__(self, name, scene, data, mode="local", initial=None):
         self.name = name
         self.scene = scene
-        self.amp = data['amp']
-        self.freq = data['freq']
+        self.data = data
         self.mode = mode
         self.initial = initial
         if self.mode == "global":
@@ -97,6 +90,13 @@ class SineModifier(Modifier):
             self.initial = None
         elif self.mode == "local":
             self.initial = data['initial']
+
+
+class SineModifier(Modifier):
+    def __init__(self, *args, **kwargs):
+        super(SineModifier, self).__init__(*args, **kwargs)
+        self.amp = self.data['amp']
+        self.freq = self.data['freq']
 
     def calc_value(self, value=None):
         if self.initial:
@@ -106,17 +106,10 @@ class SineModifier(Modifier):
 
 
 class CosineModifier(Modifier):
-    def __init__(self, name, scene, data, mode="local"):
-        self.name = name
-        self.scene = scene
-        self.amp = data['amp']
-        self.freq = data['freq']
-        self.mode = mode
-        if self.mode == "global":
-            self.fixtures = data['fixtures']
-            self.initial = None
-        elif self.mode == "local":
-            self.initial = data['initial']
+    def __init__(self, *args, **kwargs):
+        super(CosineModifier, self).__init__(*args, **kwargs)
+        self.amp = self.data['amp']
+        self.freq = self.data['freq']
 
     def calc_value(self, value=None):
         if self.initial:
@@ -126,16 +119,9 @@ class CosineModifier(Modifier):
 
 
 class WaypointModifier(Modifier):
-    def __init__(self, name, scene, data, mode="local"):
-        self.name = name
-        self.scene = scene
-        self.points = data['points']
-        self.mode = mode
-        if self.mode == "global":
-            self.fixtures = data['fixtures']
-            self.initial = None
-        elif self.mode == "local":
-            self.initial = data['initial']
+    def __init__(self, *args, **kwargs):
+        super(WaypointModifier, self).__init__(*args, **kwargs)
+        self.points = self.data['points']
         self.x = [p[0] for p in self.points]
         self.y = [p[1] for p in self.points]
         self.rep = scipy.interpolate.splrep(self.x, self.y, s=0)

@@ -34,7 +34,6 @@ class Manager(object):
                 if item[0] == self.current_scene.name:
                     source.set_active(i)
 
-
     def run(self):
         rdata = array.array('B')
         for i in range(0, 512):
@@ -83,7 +82,6 @@ class MyWindow(Gtk.Window):
             if item[0] == self.manager.current_scene.name:
                 source.set_active(i)
 
-
         destination_store = Gtk.ListStore(str)
         scenes = manager.scenes.keys()
         for scene in scenes:
@@ -120,6 +118,5 @@ if __name__ == "__main__":
     manager = Manager()
     win = MyWindow(manager)
     manager.win = win
-    #manager.set_scene(manager.scenes['black'])
     GObject.timeout_add(10, manager.run)
     Gtk.main()
