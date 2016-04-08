@@ -79,17 +79,14 @@ class TransitionScene(Scene):
 
 
 class Modifier(object):
-    def __init__(self, name, scene, data, mode="local", initial=None):
+    def __init__(self, name, scene, data, mode="local"):
         self.name = name
         self.scene = scene
         self.data = data
         self.mode = mode
-        self.initial = initial
+        self.initial = data.get('initial', None)
         if self.mode == "global":
             self.fixtures = data['fixtures']
-            self.initial = None
-        elif self.mode == "local":
-            self.initial = data['initial']
 
 
 class SineModifier(Modifier):
@@ -98,7 +95,7 @@ class SineModifier(Modifier):
         self.amp = self.data['amp']
         self.freq = self.data['freq']
 
-    def calc_value(self, value=None):
+    def calc_value(self, value=0):
         if self.initial:
             value = self.initial
         new_value = self.amp * math.sin(self.freq * (time.time() - self.scene.start_time))
@@ -111,7 +108,7 @@ class CosineModifier(Modifier):
         self.amp = self.data['amp']
         self.freq = self.data['freq']
 
-    def calc_value(self, value=None):
+    def calc_value(self, value=0):
         if self.initial:
             value = self.initial
         new_value = self.amp * math.cos(self.freq * (time.time() - self.scene.start_time))
@@ -126,9 +123,11 @@ class WaypointModifier(Modifier):
         self.y = [p[1] for p in self.points]
         self.rep = scipy.interpolate.splrep(self.x, self.y, s=0)
 
-    def calc_value(self, value=None):
+    def calc_value(self, value=0):
+        if self.initial:
+            value = self.initial
         new_value = scipy.interpolate.splev([time.time() - self.scene.start_time], self.rep, der=0)
-        return cap(new_value[0])
+        return cap(value + new_value[0])
 
 
 class FadeScene(TransitionScene):
