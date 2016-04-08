@@ -88,6 +88,12 @@ class Modifier(object):
         if self.mode == "global":
             self.fixtures = data['fixtures']
 
+    def calc_value(self, value=0):
+        if self.initial:
+            value = self.initial
+        nval = self.calculate()
+        return cap(value + nval)
+
 
 class SineModifier(Modifier):
     def __init__(self, *args, **kwargs):
@@ -95,11 +101,8 @@ class SineModifier(Modifier):
         self.amp = self.data['amp']
         self.freq = self.data['freq']
 
-    def calc_value(self, value=0):
-        if self.initial:
-            value = self.initial
-        new_value = self.amp * math.sin(self.freq * (time.time() - self.scene.start_time))
-        return cap(value + new_value)
+    def calculate(self):
+        return self.amp * math.sin(self.freq * (time.time() - self.scene.start_time))
 
 
 class CosineModifier(Modifier):
@@ -108,11 +111,8 @@ class CosineModifier(Modifier):
         self.amp = self.data['amp']
         self.freq = self.data['freq']
 
-    def calc_value(self, value=0):
-        if self.initial:
-            value = self.initial
-        new_value = self.amp * math.cos(self.freq * (time.time() - self.scene.start_time))
-        return cap(value + new_value)
+    def calculate(self):
+        return self.amp * math.cos(self.freq * (time.time() - self.scene.start_time))
 
 
 class WaypointModifier(Modifier):
@@ -123,11 +123,8 @@ class WaypointModifier(Modifier):
         self.y = [p[1] for p in self.points]
         self.rep = scipy.interpolate.splrep(self.x, self.y, s=0)
 
-    def calc_value(self, value=0):
-        if self.initial:
-            value = self.initial
-        new_value = scipy.interpolate.splev([time.time() - self.scene.start_time], self.rep, der=0)
-        return cap(value + new_value[0])
+    def calculate(self):
+        return scipy.interpolate.splev([time.time() - self.scene.start_time], self.rep, der=0)[0]
 
 
 class FadeScene(TransitionScene):
