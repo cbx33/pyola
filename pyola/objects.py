@@ -32,12 +32,14 @@ class Fixture(object):
 
 
 class Scene(object):
-    def __init__(self, name, data):
+    def __init__(self, name, manager, data):
         self.name = name
-        self.data = data
+        self.data = manager
+        self.raw_data = data
         self.modifiers = []
         self.start_time = 0
         self.base_fixtures = {}
+        self.timeout = self.raw_data.get('timeout', None)
 
     def add_fixture(self, fixture, values):
         self.fixtures[fixture] = values
@@ -55,6 +57,8 @@ class Scene(object):
 
     @property
     def fixtures(self):
+        if time.time() - self.start_time > self.timeout:
+            self.reset()
         if not self.modifiers:
             return self.base_fixtures
         else:

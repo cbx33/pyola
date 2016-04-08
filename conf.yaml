@@ -40,6 +40,7 @@ scenes:
         values:
           pan: 0
   scene2:
+    timeout: 20
     fixtures:
       light1:
         values:

@@ -38,7 +38,7 @@ def load_fixtures(fixture_types):
 def load_scenes(manager):
     scenes = {}
     for scene_name, data in CONFIG['scenes'].iteritems():
-        scene = Scene(scene_name, manager)
+        scene = Scene(scene_name, manager, data)
         scenes[scene_name] = scene
         for fixture, fvalues in data['fixtures'].iteritems():
             new_values = {}
