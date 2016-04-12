@@ -1,4 +1,4 @@
-start_scene: wild_scene
+start_scene: flat-test
 fixture_types:
   light:
     address_length: 8
@@ -23,14 +23,14 @@ fixtures:
     start_address: 33
   light4:
     type: light
-    start_address: 47
+    start_address: 49
 scenes:
   black:
     fixtures:
       light1:
         values:
           pan: 0
-          tilt: 0
+          tilt: 50
           spd: 20
           bright: 0
           red: 0
@@ -39,6 +39,30 @@ scenes:
       light2:
         values:
           pan: 0
+          tilt: 50
+          spd: 20
+          bright: 0
+          red: 0
+          green: 0
+          blue: 0
+      light3:
+        values:
+          pan: 0
+          tilt: 50
+          spd: 20
+          bright: 0
+          red: 0
+          green: 0
+          blue: 0
+      light4:
+        values:
+          pan: 0
+          tilt: 50
+          spd: 20
+          bright: 0
+          red: 0
+          green: 0
+          blue: 0
   scene2:
     timeout: 20
     fixtures:
@@ -73,16 +97,40 @@ scenes:
     fixtures:
       light1:
         values:
-          pan: 5
-          tilt: 50
+          pan: 0
+          tilt: {'type': 'sin', 'freq': 3, 'amp': 30, 'initial': 100}
           bright: 255
           spd: 20
-          red: 225
-          green: 52
-          blue: 140
+          red: 255
+          green: {'type': 'sin', 'freq': 7, 'amp': 255, 'initial': 0}
+          blue: {'type': 'sin', 'freq': 7, 'amp': 255, 'initial': 0}
       light2:
         values:
           pan: 0
+          tilt: 50
+          bright: 255
+          spd: 20
+          red: 255
+          green: {'type': 'cos', 'freq': 7, 'amp': 255, 'initial': 0}
+          blue: {'type': 'cos', 'freq': 7, 'amp': 255, 'initial': 0}
+      light3:
+        values:
+          pan: 0
+          tilt: 50
+          bright: 255
+          spd: 20
+          red: 255
+          green: {'type': 'sin', 'freq': 7, 'amp': 255, 'initial': 0}
+          blue: {'type': 'sin', 'freq': 7, 'amp': 255, 'initial': 0}
+      light4:
+        values:
+          pan: 0
+          tilt: {'type': 'cos', 'freq': 3, 'amp': 30, 'initial': 100}
+          bright: 255
+          spd: 20
+          red: 255
+          green: {'type': 'cos', 'freq': 7, 'amp': 255, 'initial': 0}
+          blue: {'type': 'cos', 'freq': 7, 'amp': 255, 'initial': 0}
   wild_scene:
     fixtures:
       light1:
@@ -97,6 +145,13 @@ scenes:
       light2:
         values:
           pan: 0
+      light3:
+        values:
+          pan: 0
+      light4:
+        values:
+          pan: 0
+
     modifiers:
       wild_tilt:
         type: sin
@@ -137,3 +192,8 @@ scenes:
       light2:
         values:
           pan: 0
+  flat-test:
+    fixtures:
+      light1:
+        values:
+          pan: {'type': 'immediate', 'points': [[0, 10], [5, 20]]}

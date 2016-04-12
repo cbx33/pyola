@@ -1,3 +1,4 @@
+# Add Phase offset
 import time
 import math
 import scipy.interpolate
@@ -103,6 +104,10 @@ class Modifier(object):
         if self.mode == "global":
             self.fixtures = data['fixtures']
 
+    @property
+    def current_time(self):
+        return time.time() - self.start_time
+
     def calc_value(self, value=0):
         if self.timeout:
             if time.time() - self.start_time > self.timeout:
@@ -120,7 +125,7 @@ class SineModifier(Modifier):
         self.freq = self.data['freq']
 
     def calculate(self):
-        return self.amp * math.sin(self.freq * (time.time() - self.start_time))
+        return self.amp * math.sin(self.freq * (self.current_time))
 
 
 class CosineModifier(Modifier):
@@ -130,7 +135,7 @@ class CosineModifier(Modifier):
         self.freq = self.data['freq']
 
     def calculate(self):
-        return self.amp * math.cos(self.freq * (time.time() - self.start_time))
+        return self.amp * math.cos(self.freq * (self.current_time))
 
 
 class WaypointModifier(Modifier):
@@ -142,7 +147,22 @@ class WaypointModifier(Modifier):
         self.rep = scipy.interpolate.splrep(self.x, self.y, s=0)
 
     def calculate(self):
-        return scipy.interpolate.splev([time.time() - self.start_time], self.rep, der=0)[0]
+        return cap(scipy.interpolate.splev([self.current_time], self.rep, der=0)[0])
+
+
+class FlatWaypointModifier(Modifier):
+    def __init__(self, *args, **kwargs):
+        super(FlatWaypointModifier, self).__init__(*args, **kwargs)
+        self.points = self.data['points']
+
+    def calculate(self):
+        for point in self.points:
+            if point[0] <= self.current_time:
+                continue
+            else:
+                return cap(point[1])
+        else:
+            return cap(self.points[-1][0])
 
 
 class FadeScene(TransitionScene):
@@ -190,5 +210,6 @@ class FadeScene(TransitionScene):
 mod_map = {
     'sin': SineModifier,
     'cos': CosineModifier,
-    'waypoint': WaypointModifier
+    'waypoint': WaypointModifier,
+    'immediate': FlatWaypointModifier,
 }
