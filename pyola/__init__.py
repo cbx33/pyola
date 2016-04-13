@@ -1,4 +1,7 @@
-from conf import load_fixtures, load_scenes, load_fixture_types, load_default_scene
+from conf import (
+    load_fixtures, load_scenes, load_fixture_types,
+    load_default_scene, load_constants
+)
 from objects import FadeScene
 import array
 from ola.ClientWrapper import ClientWrapper
@@ -19,6 +22,7 @@ def DmxSent(state):
 class Manager(object):
     def __init__(self):
         self.fixture_types = load_fixture_types()
+        self.constants = load_constants()
         self.fixtures = load_fixtures(self.fixture_types)
         self.scenes = load_scenes(self)
         self.set_scene(self.scenes[load_default_scene()])

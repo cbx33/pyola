@@ -11,6 +11,15 @@ def cap(value):
     return int(val)
 
 
+def get_val_from_const(value, constants):
+    if value is None:
+        return None
+    elif isinstance(value, basestring):
+        return constants[value]
+    else:
+        return value
+
+
 class FixtureType(object):
     def __init__(self, name, address_length, chans):
         self.name = name
@@ -93,16 +102,25 @@ class TransitionScene(Scene):
 
 
 class Modifier(object):
-    def __init__(self, name, scene, data, mode="local"):
+    def __init__(self, name, scene, data, manager, mode="local"):
         self.start_time = 0
         self.name = name
         self.scene = scene
         self.data = data
+        self.manager = manager
         self.mode = mode
-        self.timeout = data.get('timeout', None)
-        self.initial = data.get('initial', None)
+        self.timeout = self.data.get('timeout', None)
+        self.initial = get_val_from_const(self.data.get('initial', None), self.manager.constants)
         if self.mode == "global":
             self.fixtures = data['fixtures']
+
+#    @property
+#    def initial(self):
+#        base_data = self.data.get('initial', None)
+#        if isinstance(base_data, basestring):
+#            return self.manager.constants[base_data]
+#        else:
+#            return base_data
 
     @property
     def current_time(self):
@@ -138,10 +156,20 @@ class CosineModifier(Modifier):
         return self.amp * math.cos(self.freq * (self.current_time))
 
 
-class WaypointModifier(Modifier):
+class WaypointMixin(object):
+        def normalize_points(self, points, manager):
+            new_points = []
+            for point in points:
+                point_val = get_val_from_const(point[1], manager)
+                new_points.append([point[0], point_val])
+            return new_points
+
+
+class WaypointModifier(Modifier, WaypointMixin):
     def __init__(self, *args, **kwargs):
         super(WaypointModifier, self).__init__(*args, **kwargs)
-        self.points = self.data['points']
+        self.points = self.normalize_points(self.data['points'], self.manager.constants)
+        print self.points
         self.x = [p[0] for p in self.points]
         self.y = [p[1] for p in self.points]
         self.rep = scipy.interpolate.splrep(self.x, self.y, s=0)
@@ -150,10 +178,10 @@ class WaypointModifier(Modifier):
         return cap(scipy.interpolate.splev([self.current_time], self.rep, der=0)[0])
 
 
-class FlatWaypointModifier(Modifier):
+class FlatWaypointModifier(Modifier, WaypointMixin):
     def __init__(self, *args, **kwargs):
         super(FlatWaypointModifier, self).__init__(*args, **kwargs)
-        self.points = self.data['points']
+        self.points = self.normalize_points(self.data['points'], self.manager.constants)
 
     def calculate(self):
         best_match = self.points[0]
@@ -163,8 +191,6 @@ class FlatWaypointModifier(Modifier):
             else:
                 best_match = point
         return best_match[1]
-#        else:
-#return cap(self.points[-1][0])
 
 
 class FadeScene(TransitionScene):
