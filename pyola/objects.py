@@ -156,13 +156,15 @@ class FlatWaypointModifier(Modifier):
         self.points = self.data['points']
 
     def calculate(self):
+        best_match = self.points[0]
         for point in self.points:
-            if point[0] <= self.current_time:
-                continue
+            if point[0] >= self.current_time:
+                break
             else:
-                return cap(point[1])
-        else:
-            return cap(self.points[-1][0])
+                best_match = point
+        return best_match[1]
+#        else:
+#return cap(self.points[-1][0])
 
 
 class FadeScene(TransitionScene):

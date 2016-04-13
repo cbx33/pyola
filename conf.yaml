@@ -196,4 +196,4 @@ scenes:
     fixtures:
       light1:
         values:
-          pan: {'type': 'immediate', 'points': [[0, 10], [5, 20]]}
+          pan: {'type': 'immediate', 'points': [[0, 10], [.1, 20], [.2, 30]], timeout: .3}
