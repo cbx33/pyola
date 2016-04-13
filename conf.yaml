@@ -201,8 +201,8 @@ scenes:
           pan: {'type': 'immediate', 'points': [[0, 10], [.1, 20], [.2, 30]], timeout: .3, initial: TILT_CENTER}
           tilt: TILT_CENTER
           bright: {'type': 'waypoint', 'points': [[0,TILT_CENTER],[5,255],[10,125],[15,0]], 'initial': 0, 'timeout': 15}
-          red: {'type': 'sin', 'freq': 1, 'amp': 20, 'initial': TILT_CENTER}
-          blue: {'type': 'cos', 'freq': 1, 'amp': 20, 'initial': TILT_CENTER}
+          red: {'type': 'sin', 'freq': TILT_CENTER, 'amp': 20, 'initial': TILT_CENTER}
+          blue: {'type': 'cos', 'freq': 1, 'amp': TILT_CENTER, 'initial': TILT_CENTER}
       light2:
         values:
           pan: 0
