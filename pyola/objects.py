@@ -221,6 +221,8 @@ class FadeScene(TransitionScene):
                         combined_fixtures[fixture][chan] = int(y)
                 if fixture in self.end_scene.fixtures:
                     for chan, value in fixture_values.iteritems():
+                        if fixture not in self.start_scene.fixtures:
+                            continue
                         y0 = self.start_scene.fixtures[fixture].get(
                             chan,
                             fixture.values[chan])

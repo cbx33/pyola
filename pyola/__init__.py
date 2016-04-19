@@ -2,14 +2,19 @@ from conf import (
     load_fixtures, load_scenes, load_fixture_types,
     load_default_scene, load_constants
 )
-from objects import FadeScene
+from objects import FadeScene, cap
 import array
 from ola.ClientWrapper import ClientWrapper
+from bottle import run, route, ServerAdapter
+from waitress.server import create_server
 
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import GObject
+
+import threading
+import json
 
 wrapper = ClientWrapper()
 
@@ -17,6 +22,18 @@ wrapper = ClientWrapper()
 def DmxSent(state):
     if not state.Succeeded():
         wrapper.Stop()
+
+
+class RatBag(ServerAdapter):
+    server = None
+
+    def serve(self, app, **kw):
+        _myserver = kw.pop('_server', create_server)
+        self.myserver = _myserver(app, **kw)
+        self.myserver.run()
+
+    def run(self, handler):
+        self.serve(handler, host=self.host, port=self.port, threads=10)
 
 
 class Manager(object):
@@ -47,15 +64,23 @@ class Manager(object):
         for fixture, values in self.current_scene.fixtures.iteritems():
             for chan, value in values.iteritems():
                 # chan_value = self.fixtures[fixture.name].chans[chan]
-                self.fixtures[fixture.name].values[chan] = value
+                self.fixtures[fixture.name].values[chan] = cap(value)
 
         for fixture_name, fixture in self.fixtures.iteritems():
-            print fixture.values
+            # print fixture.values
             for chan, value in fixture.values.iteritems():
                 chan_value = self.fixtures[fixture.name].chans[chan]
                 rdata[fixture.start_address + chan_value - 2] = value
         wrapper.Client().SendDmx(1, rdata, DmxSent)
         GObject.timeout_add(10, self.run)
+
+
+@route('/boo/')
+def getter():
+    ddict = {}
+    for fixture_name, fixture in manager.fixtures.iteritems():
+        ddict[fixture_name] = fixture.values
+    return json.dumps(ddict)
 
 
 class MyWindow(Gtk.Window):
@@ -122,5 +147,14 @@ if __name__ == "__main__":
     manager = Manager()
     win = MyWindow(manager)
     manager.win = win
+
+    _server = RatBag(host='127.0.0.1', port='8000')
+    server_thread = threading.Thread(target=run, kwargs=dict(server=_server, quiet=True))
+    # Good for debugging
+    # server_thread = threading.Thread(target=run, kwargs=dict(host=self._server_hostname,
+    #                                                         port=self._server_port))
+    server_thread.daemon = True
+    server_thread.start()
+
     GObject.timeout_add(10, manager.run)
     Gtk.main()
