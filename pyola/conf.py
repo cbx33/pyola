@@ -46,7 +46,6 @@ class Config(object):
                 val_dict[chan] = value
             elif isinstance(value, basestring):
                 val_dict[chan] = get_val_from_const(value, self.manager.constants, chan)
-                #val_dict[chan] = self.manager.constants[value]
             else:
                 val_dict[chan] = mod_map[value['type']](
                     "{}-{}-{}".format(scene, fixture, chan), scene, value, self.manager)
