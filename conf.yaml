@@ -31,6 +31,11 @@ fixtures:
     type: light
     start_address: 49
 scenes:
+  01-blud:
+    fixtures:
+      light1:
+        values:
+          pan: TILT_CENTER
   black:
     fixtures:
       light1:
