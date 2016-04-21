@@ -1,7 +1,4 @@
-from conf import (
-    load_fixtures, load_scenes, load_fixture_types,
-    load_default_scene, load_constants
-)
+from conf import Config
 from objects import FadeScene, cap
 import array
 from ola.ClientWrapper import ClientWrapper
@@ -15,6 +12,8 @@ from gi.repository import GObject
 
 import threading
 import json
+
+import argparse
 
 wrapper = ClientWrapper()
 
@@ -37,12 +36,14 @@ class RatBag(ServerAdapter):
 
 
 class Manager(object):
-    def __init__(self):
-        self.fixture_types = load_fixture_types()
-        self.constants = load_constants()
-        self.fixtures = load_fixtures(self.fixture_types)
-        self.scenes = load_scenes(self)
-        self.set_scene(self.scenes[load_default_scene()])
+    def __init__(self, config_file):
+        self._config = Config(config_file)
+        self.fixture_types = self._config.load_fixture_types()
+        self.constants = self._config.load_constants()
+        self.fixtures = self._config.load_fixtures(self.fixture_types)
+        self.scenes = self._config.load_scenes(self)
+        self.set_scene(self.scenes[self._config.load_default_scene()])
+        self.win = MyWindow(self)
 
     def set_scene(self, scene, reset=True):
         self.current_scene = scene
@@ -144,9 +145,12 @@ class MyWindow(Gtk.Window):
 
 
 if __name__ == "__main__":
-    manager = Manager()
-    win = MyWindow(manager)
-    manager.win = win
+    parser = argparse.ArgumentParser(
+        epilog=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument('--config-file', help='config file', required=True)
+    args = parser.parse_args()
+
+    manager = Manager(args.config_file)
 
     _server = RatBag(host='127.0.0.1', port='8000')
     server_thread = threading.Thread(target=run, kwargs=dict(server=_server, quiet=True))
