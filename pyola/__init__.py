@@ -37,11 +37,11 @@ class RatBag(ServerAdapter):
 
 class Manager(object):
     def __init__(self, config_file):
-        self._config = Config(config_file)
+        self._config = Config(config_file, self)
         self.fixture_types = self._config.load_fixture_types()
         self.constants = self._config.load_constants()
-        self.fixtures = self._config.load_fixtures(self.fixture_types)
-        self.scenes = self._config.load_scenes(self)
+        self.fixtures = self._config.load_fixtures()
+        self.scenes = self._config.load_scenes()
         self.set_scene(self.scenes[self._config.load_default_scene()])
         self.win = MyWindow(self)
 
