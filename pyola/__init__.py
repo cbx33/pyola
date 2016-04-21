@@ -101,6 +101,7 @@ class MyWindow(Gtk.Window):
 
         source_store = Gtk.ListStore(str)
         scenes = manager.scenes.keys()
+        scenes = sorted(scenes)
         for scene in scenes:
             source_store.append([scene])
         source = self.builder.get_object('source')
@@ -114,6 +115,7 @@ class MyWindow(Gtk.Window):
 
         destination_store = Gtk.ListStore(str)
         scenes = manager.scenes.keys()
+        scenes = sorted(scenes)
         for scene in scenes:
             destination_store.append([scene])
         destination = self.builder.get_object('destination')
