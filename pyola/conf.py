@@ -1,5 +1,5 @@
 import yaml
-from objects import Scene, Fixture, FixtureType, mod_map
+from objects import Scene, Fixture, FixtureType, mod_map, get_val_from_const
 
 
 CONFIG_FILE = "conf.yaml"
@@ -41,13 +41,16 @@ class Config(object):
 
     def _load_fixtures_values(self, values, val_dict, scene, fixture):
         for chan, value in values.iteritems():
+            print fixture, chan, value, "++"
             if isinstance(value, int):
                 val_dict[chan] = value
             elif isinstance(value, basestring):
-                val_dict[chan] = self.manager.constants[value]
+                val_dict[chan] = get_val_from_const(value, self.manager.constants, chan)
+                #val_dict[chan] = self.manager.constants[value]
             else:
                 val_dict[chan] = mod_map[value['type']](
                     "{}-{}-{}".format(scene, fixture, chan), scene, value, self.manager)
+            print val_dict
         return val_dict
 
     def load_scenes(self):
@@ -63,6 +66,9 @@ class Config(object):
                     new_values = self._load_fixtures_values(
                         inherit_values, new_values, scene, fixture)
                 if "values" in fvalues:
+                    new_values = self._load_fixtures_values(
+                        fvalues['values'], new_values, scene, fixture)
+                """
                     for chan, value in fvalues['values'].iteritems():
                         if isinstance(value, int):
                             new_values[chan] = value
@@ -72,6 +78,7 @@ class Config(object):
                             new_values[chan] = mod_map[value['type']](
                                 "{}-{}-{}".format(
                                     scene, fixture, chan), scene, value, self.manager)
+                """
                 scene.add_fixture(self.manager.fixtures[fixture], new_values)
             if 'modifiers' in data:
                 for modifier, m_data in data['modifiers'].iteritems():

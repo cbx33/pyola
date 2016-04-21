@@ -1,6 +1,10 @@
 start_scene: flat-test
 constants:
   TILT_CENTER: 50
+  BLUE:
+    red: 0
+    green: 0
+    blue: 255
 fixture_types:
   light:
     address_length: 8
@@ -201,6 +205,9 @@ scenes:
       light2:
         values:
           pan: 0
+          red: BLUE
+          green: BLUE
+          blue: BLUE
       light3:
         values:
           pan: 0

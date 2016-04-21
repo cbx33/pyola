@@ -11,11 +11,14 @@ def cap(value):
     return int(val)
 
 
-def get_val_from_const(value, constants):
+def get_val_from_const(value, constants, chan=None):
     if value is None:
         return None
     elif isinstance(value, basestring):
-        return constants[value]
+        if chan and isinstance(constants[value], dict) and chan in constants[value]:
+            return constants[value][chan]
+        else:
+            return constants[value]
     else:
         return value
 
@@ -157,10 +160,10 @@ class CosineModifier(Modifier):
 
 
 class WaypointMixin(object):
-        def normalize_points(self, points, manager):
+        def normalize_points(self, points, consts):
             new_points = []
             for point in points:
-                point_val = get_val_from_const(point[1], manager)
+                point_val = get_val_from_const(point[1], consts)
                 new_points.append([point[0], point_val])
             return new_points
 
