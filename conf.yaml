@@ -31,6 +31,14 @@ fixtures:
     type: light
     start_address: 49
 scenes:
+  winkle:
+    inherit: black
+    fixtures:
+      light1:
+        values:
+          pan: 255
+      light2:
+        inherit: light1
   01-blud:
     fixtures:
       light1:
@@ -40,8 +48,6 @@ scenes:
     fixtures:
       light1:
         inherit: light2
-        values:
-          tilt: 80
       light2:
         values:
           pan: 0

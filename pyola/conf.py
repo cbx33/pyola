@@ -1,8 +1,36 @@
+from copy import deepcopy
 import yaml
+
 from objects import Scene, Fixture, FixtureType, mod_map, get_val_from_const
 
 
 CONFIG_FILE = "conf.yaml"
+
+from collections import Mapping
+
+
+def recursive_update(orig_dict, updates):
+    """
+    Update dict objects with recursive merge.
+    Args:
+        orig_dict: The original dict.
+        updates: The updates to merge with the dictionary.
+    """
+    for key, val in updates.iteritems():
+        # If the item with update is a mapping, let's go deeper
+        if isinstance(val, Mapping):
+            orig_dict[key] = recursive_update(orig_dict.get(key, {}), val)
+        # If the thing updated is a list and the update is also a list, then just extend it
+        elif isinstance(val, list) and isinstance(orig_dict.get(key, None), list):
+            # lists are treated as leaves of the update functions.
+            # Things would get waaay to complicated.
+            orig_dict[key].extend(val)
+        # Otherwise if we are updating a dictionary and no previous branch matched, just set it.
+        elif isinstance(orig_dict, Mapping):
+            orig_dict[key] = updates[key]
+        else:
+            orig_dict = {key: updates[key]}
+    return orig_dict
 
 
 class Config(object):
@@ -55,16 +83,26 @@ class Config(object):
     def load_scenes(self):
         scenes = {}
         for scene_name, data in self.config['scenes'].iteritems():
+            while "inherit" in data:
+                inherit_data = deepcopy(self.config['scenes'][data['inherit']])
+                print "INHERIT", inherit_data
+                update_data = deepcopy(data)
+                print "ORIGINAL", update_data
+                update_data.pop('inherit')
+                data = recursive_update(inherit_data, update_data)
+                print "FINAL", data
             scene = Scene(scene_name, self.manager, data)
             scenes[scene_name] = scene
             for fixture, fvalues in data['fixtures'].iteritems():
                 new_values = {}
                 if "inherit" in fvalues:
+                    print "====== values from inherit ======", fixture
                     inherit_name = fvalues['inherit']
                     inherit_values = data['fixtures'][inherit_name]['values']
                     new_values = self._load_fixtures_values(
                         inherit_values, new_values, scene, fixture)
                 if "values" in fvalues:
+                    print "====== values from original =======", fixture, fvalues
                     new_values = self._load_fixtures_values(
                         fvalues['values'], new_values, scene, fixture)
                 """
