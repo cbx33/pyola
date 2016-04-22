@@ -107,7 +107,6 @@ class Config(object):
                     data2 = data['fixtures'][inherit_name]
                     new_values = self._load_fixtures_values(
                         inherit_values, new_values, scene, fixture)
-                    print "----------", new_values, inherit_values, inherit_name, data['fixtures'][inherit_name]
                 if "values" in fvalues:
                     print "====== values from original =======", fixture, fvalues
                     new_values = self._load_fixtures_values(
