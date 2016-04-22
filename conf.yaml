@@ -47,8 +47,6 @@ scenes:
   black:
     fixtures:
       light1:
-        inherit: light2
-      light2:
         values:
           pan: 0
           tilt: 50
@@ -57,6 +55,8 @@ scenes:
           red: 0
           green: 0
           blue: 0
+      light2:
+          inherit: light1
       light3:
         values:
           pan: 0

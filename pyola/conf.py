@@ -91,20 +91,28 @@ class Config(object):
                 update_data.pop('inherit')
                 data = recursive_update(inherit_data, update_data)
                 print "FINAL", data
+                for fixture, fvalues in data['fixtures'].iteritems():
+                    if "inherit" in fvalues:
+                        fvalues['values'] = {}
             scene = Scene(scene_name, self.manager, data)
             scenes[scene_name] = scene
             for fixture, fvalues in data['fixtures'].iteritems():
                 new_values = {}
-                if "inherit" in fvalues:
+                data2 = deepcopy(fvalues)
+                while "inherit" in data2:
+                    data2.pop('inherit')
                     print "====== values from inherit ======", fixture
                     inherit_name = fvalues['inherit']
                     inherit_values = data['fixtures'][inherit_name]['values']
+                    data2 = data['fixtures'][inherit_name]
                     new_values = self._load_fixtures_values(
                         inherit_values, new_values, scene, fixture)
+                    print "----------", new_values, inherit_values, inherit_name, data['fixtures'][inherit_name]
                 if "values" in fvalues:
                     print "====== values from original =======", fixture, fvalues
                     new_values = self._load_fixtures_values(
                         fvalues['values'], new_values, scene, fixture)
+                    print "----------", new_values
                 """
                     for chan, value in fvalues['values'].iteritems():
                         if isinstance(value, int):
