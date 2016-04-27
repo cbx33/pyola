@@ -2,13 +2,15 @@
 import time
 import math
 import scipy.interpolate
+import random
 
 
 def cap(value):
-    val = abs(value)
-    if val > 255:
-        val = 255
-    return int(val)
+    if value > 255:
+        value = 255
+    if value < 0:
+        value = 0
+    return int(value)
 
 
 def get_val_from_const(value, constants, chan=None):
@@ -139,6 +141,31 @@ class Modifier(object):
         return cap(value + nval)
 
 
+class FlashingModifier(Modifier):
+    def __init__(self, *args, **kwargs):
+        super(FlashingModifier, self).__init__(*args, **kwargs)
+        self.flash_start = None
+        {'type': 'flasher', 'prob': .5, 'duration': .1, 'initial': 0, max: 255}
+        self.prob = get_val_from_const(self.data.get('prob', None), self.manager.constants)
+        self.duration = get_val_from_const(self.data.get('duration', None), self.manager.constants)
+        self.max = get_val_from_const(self.data.get('max', None), self.manager.constants)
+
+    def calculate(self):
+        if self.flash_start:
+            if time.time() - self.flash_start >= self.duration:
+                self.flash_start = None
+                val = 0
+            else:
+                val = self.max
+        else:
+            if random.random() < self.prob:
+                self.flash_start = time.time()
+                val = self.max
+            else:
+                val = 0
+        return val
+
+
 class SineModifier(Modifier):
     def __init__(self, *args, **kwargs):
         super(SineModifier, self).__init__(*args, **kwargs)
@@ -178,6 +205,7 @@ class WaypointModifier(Modifier, WaypointMixin):
         self.rep = scipy.interpolate.splrep(self.x, self.y, s=0)
 
     def calculate(self):
+        print scipy.interpolate.splev([self.current_time], self.rep, der=0)[0]
         return cap(scipy.interpolate.splev([self.current_time], self.rep, der=0)[0])
 
 
@@ -245,4 +273,5 @@ mod_map = {
     'cos': CosineModifier,
     'waypoint': WaypointModifier,
     'immediate': FlatWaypointModifier,
+    'flasher': FlashingModifier
 }

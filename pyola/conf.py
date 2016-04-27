@@ -83,6 +83,7 @@ class Config(object):
     def load_scenes(self):
         scenes = {}
         for scene_name, data in self.config['scenes'].iteritems():
+            print scene_name
             while "inherit" in data:
                 inherit_data = deepcopy(self.config['scenes'][data['inherit']])
                 print "INHERIT", inherit_data
