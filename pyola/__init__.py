@@ -91,6 +91,13 @@ class MyWindow(Gtk.Window):
         self.builder.add_from_file("pyola.glade")
 
         window = self.builder.get_object("window1")
+        window.set_default_size(800, 600)
+        notebook = self.builder.get_object('notebook1')
+
+        sorted_fixtures = sorted(self.manager.fixtures.keys())
+        for fixture in sorted_fixtures:
+            self._build_fixture_gui(self.manager.fixtures[fixture], notebook)
+
         window.show_all()
 
         handlers = {
@@ -123,6 +130,46 @@ class MyWindow(Gtk.Window):
         renderer_text = Gtk.CellRendererText()
         destination.pack_start(renderer_text, True)
         destination.add_attribute(renderer_text, "text", 0)
+
+    def _build_fixture_gui(self, fixture, notebook):
+        sorted_fixture_channels = sorted(fixture.chans.keys(), key=lambda a: fixture.chans[a])
+
+        fixture_hbox = Gtk.HBox(homogeneous=True)
+        fixture_hbox.set_hexpand(False)
+        for chan in sorted_fixture_channels:
+            chan_label = Gtk.Label(chan)
+            chan_label.set_halign(Gtk.Align.CENTER)
+            chan_vbox = Gtk.VBox()
+            # a vertical scale
+            ad2 = Gtk.Adjustment(0, 0, 100, 5, 10, 0)
+            chan_slider = Gtk.Scale(
+                orientation=Gtk.Orientation.VERTICAL, adjustment=ad2)
+            chan_slider.set_inverted(True)
+            # that can expand vertically if there is space in the grid (see below)
+            chan_slider.set_vexpand(True)
+            # we connect the signal "value-changed" emitted by the scale with the callback
+            # function scale_moved
+            chan_slider.connect("value-changed", self.scale_moved)
+            chan_slider.set_value(75)
+            chan_slider.set_halign(Gtk.Align.CENTER)
+            chan_slider.set_sensitive(False)
+            chan_checkbox = Gtk.CheckButton()
+            chan_checkbox.set_halign(Gtk.Align.CENTER)
+            chan_checkbox.connect("value-changed", self.widget_scale)
+            fixture_label = Gtk.Label(fixture.name)
+            fixture_label.set_halign(Gtk.Align.CENTER)
+            chan_vbox.add(chan_slider)
+            chan_vbox.add(chan_checkbox)
+            chan_vbox.add(chan_label)
+            fixture_hbox.add(chan_vbox)
+            #import pdb; pdb.set_trace()
+        notebook.append_page(fixture_hbox, fixture_label)
+
+    def scale_moved(self, widget):
+        pass
+
+    def widget_scale(self, widget):
+        print "HO"
 
     def on_button_clicked(self, widget):
         source = self.builder.get_object('source')
