@@ -66,11 +66,14 @@ class Manager(object):
             for chan, value in values.iteritems():
                 # chan_value = self.fixtures[fixture.name].chans[chan]
                 self.fixtures[fixture.name].values[chan] = cap(value)
-                self.fixtures[fixture.name].sliders[chan].set_value(value)
+                if not self.fixtures[fixture.name].override.get(chan, None):
+                    self.fixtures[fixture.name].sliders[chan].set_value(value)
 
         for fixture_name, fixture in self.fixtures.iteritems():
             # print fixture.values
             for chan, value in fixture.values.iteritems():
+                if self.fixtures[fixture.name].override.get(chan, None):
+                    value = int(self.fixtures[fixture.name].sliders[chan].get_value())
                 chan_value = self.fixtures[fixture.name].chans[chan]
                 rdata[fixture.start_address + chan_value - 2] = value
         wrapper.Client().SendDmx(1, rdata, DmxSent)
@@ -172,6 +175,7 @@ class MyWindow(Gtk.Window):
 
     def chan_toggled(self, widget, fixture, chan, chan_slider):
         chan_slider.set_sensitive(widget.get_active())
+        fixture.override[chan] = widget.get_active()
 
     def on_button_clicked(self, widget):
         source = self.builder.get_object('source')
