@@ -66,6 +66,7 @@ class Manager(object):
             for chan, value in values.iteritems():
                 # chan_value = self.fixtures[fixture.name].chans[chan]
                 self.fixtures[fixture.name].values[chan] = cap(value)
+                self.fixtures[fixture.name].sliders[chan].set_value(value)
 
         for fixture_name, fixture in self.fixtures.iteritems():
             # print fixture.values
@@ -141,7 +142,7 @@ class MyWindow(Gtk.Window):
             chan_label.set_halign(Gtk.Align.CENTER)
             chan_vbox = Gtk.VBox()
             # a vertical scale
-            ad2 = Gtk.Adjustment(0, 0, 100, 5, 10, 0)
+            ad2 = Gtk.Adjustment(0, 0, 255, 5, 10, 0)
             chan_slider = Gtk.Scale(
                 orientation=Gtk.Orientation.VERTICAL, adjustment=ad2)
             chan_slider.set_inverted(True)
@@ -153,6 +154,7 @@ class MyWindow(Gtk.Window):
             chan_slider.set_value(75)
             chan_slider.set_halign(Gtk.Align.CENTER)
             chan_slider.set_sensitive(False)
+            fixture.sliders[chan] = chan_slider
             chan_checkbox = Gtk.CheckButton()
             chan_checkbox.set_halign(Gtk.Align.CENTER)
             chan_checkbox.connect("toggled", self.chan_toggled, fixture, chan, chan_slider)

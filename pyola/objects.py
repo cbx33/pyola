@@ -40,6 +40,10 @@ class Fixture(object):
         self.chans = chans
         self.values = {}
         self.reset_values()
+        self.override = {}
+        self.sliders = {}
+        for chan in self.chans:
+            self.override[chan] = None
 
     def reset_values(self):
         for chan in self.chans:
