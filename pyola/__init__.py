@@ -149,13 +149,13 @@ class MyWindow(Gtk.Window):
             chan_slider.set_vexpand(True)
             # we connect the signal "value-changed" emitted by the scale with the callback
             # function scale_moved
-            chan_slider.connect("value-changed", self.scale_moved)
+            chan_slider.connect("value-changed", self.chan_slider_moved, fixture, chan)
             chan_slider.set_value(75)
             chan_slider.set_halign(Gtk.Align.CENTER)
             chan_slider.set_sensitive(False)
             chan_checkbox = Gtk.CheckButton()
             chan_checkbox.set_halign(Gtk.Align.CENTER)
-            chan_checkbox.connect("value-changed", self.widget_scale)
+            chan_checkbox.connect("toggled", self.chan_toggled, fixture, chan, chan_slider)
             fixture_label = Gtk.Label(fixture.name)
             fixture_label.set_halign(Gtk.Align.CENTER)
             chan_vbox.add(chan_slider)
@@ -165,11 +165,11 @@ class MyWindow(Gtk.Window):
             #import pdb; pdb.set_trace()
         notebook.append_page(fixture_hbox, fixture_label)
 
-    def scale_moved(self, widget):
-        pass
+    def chan_slider_moved(self, widget, fixture, chan):
+        print fixture, chan
 
-    def widget_scale(self, widget):
-        print "HO"
+    def chan_toggled(self, widget, fixture, chan, chan_slider):
+        chan_slider.set_sensitive(widget.get_active())
 
     def on_button_clicked(self, widget):
         source = self.builder.get_object('source')
