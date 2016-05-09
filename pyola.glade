@@ -68,10 +68,12 @@
             </child>
             <child>
               <object class="GtkButton" id="submit">
-                <property name="label" translatable="yes">Transition</property>
+                <property name="label">gtk-media-play</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <property name="always_show_image">True</property>
                 <signal name="clicked" handler="onButtonPressed" swapped="no"/>
               </object>
               <packing>
@@ -114,11 +116,13 @@
             </child>
             <child>
               <object class="GtkButton" id="button1">
-                <property name="label" translatable="yes">Reload Config</property>
+                <property name="label">gtk-floppy</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="tooltip_text" translatable="yes">Reload the config</property>
+                <property name="use_stock">True</property>
+                <property name="always_show_image">True</property>
                 <signal name="clicked" handler="onConfigReload" swapped="no"/>
               </object>
               <packing>

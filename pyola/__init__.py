@@ -97,6 +97,18 @@ class MyWindow(Gtk.Window):
         window = self.builder.get_object("window1")
         window.set_default_size(800, 600)
         notebook = self.builder.get_object('notebook1')
+        button1 = self.builder.get_object("button1")
+        submit = self.builder.get_object("submit")
+
+        blal = button1.get_children()[0]
+        hb = blal.get_children()[0]
+        im, lab = hb.get_children()
+        lab.set_label('Reload Config')
+
+        blal = submit.get_children()[0]
+        hb = blal.get_children()[0]
+        im, lab = hb.get_children()
+        lab.set_label('Transition')
 
         sorted_fixtures = sorted(self.manager.fixtures.keys())
         for fixture in sorted_fixtures:
@@ -167,7 +179,7 @@ class MyWindow(Gtk.Window):
                 chan_slider.add_mark(int(i / 10.0), Gtk.PositionType.LEFT, str(int(i / 10.0)))
             fixture.sliders[chan] = chan_slider
             chan_checkbox = Gtk.CheckButton()
-            #chan_checkbox.set_halign(Gtk.Align.CENTER)
+            chan_checkbox.set_halign(Gtk.Align.CENTER)
             #chan_checkbox.set_valign(Gtk.Align.END)
             #chan_checkbox.set_vexpand(False)
             chan_checkbox.connect("toggled", self.chan_toggled, fixture, chan, chan_slider)
@@ -176,9 +188,10 @@ class MyWindow(Gtk.Window):
             #chan_vbox.add(chan_slider)
             #chan_vbox.add(chan_checkbox)
             #chan_vbox.add(chan_label)
-            chan_vbox.pack_start(chan_slider, expand=True, fill=True)
-            chan_vbox.pack_start(chan_checkbox, expand=False, fill=False)
-            chan_vbox.pack_start(chan_label, expand=False, fill=False)
+            #import pdb; pdb.set_trace()
+            chan_vbox.pack_start(chan_slider, True, True, 0)
+            chan_vbox.pack_start(chan_checkbox, False, False, 0)
+            chan_vbox.pack_start(chan_label, False, False, 0)
 
             fixture_hbox.add(chan_vbox)
 
