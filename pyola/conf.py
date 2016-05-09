@@ -80,7 +80,7 @@ class Config(object):
             print val_dict
         return val_dict
 
-    def load_scenes(self):
+    def load_scenes(self, update=False):
         scenes = {}
         for scene_name, data in self.config['scenes'].iteritems():
             print scene_name
@@ -95,8 +95,11 @@ class Config(object):
                 for fixture, fvalues in data['fixtures'].iteritems():
                     if "inherit" in fvalues:
                         fvalues['values'] = {}
-            scene = Scene(scene_name, self.manager, data)
-            scenes[scene_name] = scene
+            if update and scene_name in self.manager.scenes:
+                scene = self.manager.scenes[scene_name]
+            else:
+                scene = Scene(scene_name, self.manager, data)
+                scenes[scene_name] = scene
             for fixture, fvalues in data['fixtures'].iteritems():
                 new_values = {}
                 data2 = deepcopy(fvalues)

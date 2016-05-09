@@ -68,7 +68,7 @@
             </child>
             <child>
               <object class="GtkButton" id="submit">
-                <property name="label" translatable="yes">button</property>
+                <property name="label" translatable="yes">Transition</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -113,7 +113,18 @@
               </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkButton" id="button1">
+                <property name="label" translatable="yes">Reload Config</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Reload the config</property>
+                <signal name="clicked" handler="onConfigReload" swapped="no"/>
+              </object>
+              <packing>
+                <property name="left_attach">4</property>
+                <property name="top_attach">0</property>
+              </packing>
             </child>
             <child>
               <placeholder/>

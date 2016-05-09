@@ -106,7 +106,8 @@ class MyWindow(Gtk.Window):
 
         handlers = {
             "onDeleteWindow": Gtk.main_quit,
-            "onButtonPressed": self.on_button_clicked
+            "onButtonPressed": self.on_button_clicked,
+            "onConfigReload": self.on_config_reload
         }
         self.builder.connect_signals(handlers)
 
@@ -143,23 +144,28 @@ class MyWindow(Gtk.Window):
         for chan in sorted_fixture_channels:
             chan_label = Gtk.Label(chan)
             chan_label.set_halign(Gtk.Align.CENTER)
+            chan_label.set_valign(Gtk.Align.END)
             chan_vbox = Gtk.VBox()
+            chan_vbox.set_homogeneous(False)
             # a vertical scale
             ad2 = Gtk.Adjustment(0, 0, 255, 5, 10, 0)
             chan_slider = Gtk.Scale(
                 orientation=Gtk.Orientation.VERTICAL, adjustment=ad2)
             chan_slider.set_inverted(True)
             # that can expand vertically if there is space in the grid (see below)
-            chan_slider.set_vexpand(True)
+
             # we connect the signal "value-changed" emitted by the scale with the callback
             # function scale_moved
             chan_slider.connect("value-changed", self.chan_slider_moved, fixture, chan)
-            chan_slider.set_value(75)
+            chan_slider.set_value(0)
+            chan_slider.set_valign(Gtk.Align.FILL)
             chan_slider.set_halign(Gtk.Align.CENTER)
+            chan_slider.set_vexpand(True)
             chan_slider.set_sensitive(False)
             fixture.sliders[chan] = chan_slider
             chan_checkbox = Gtk.CheckButton()
             chan_checkbox.set_halign(Gtk.Align.CENTER)
+            chan_checkbox.set_valign(Gtk.Align.END)
             chan_checkbox.connect("toggled", self.chan_toggled, fixture, chan, chan_slider)
             fixture_label = Gtk.Label(fixture.name)
             fixture_label.set_halign(Gtk.Align.CENTER)
@@ -168,6 +174,7 @@ class MyWindow(Gtk.Window):
             chan_vbox.add(chan_label)
             fixture_hbox.add(chan_vbox)
             #import pdb; pdb.set_trace()
+
         notebook.append_page(fixture_hbox, fixture_label)
 
     def chan_slider_moved(self, widget, fixture, chan):
@@ -198,6 +205,9 @@ class MyWindow(Gtk.Window):
             timeout)
         manager.set_scene(trans_scene)
 
+    def on_config_reload(self, widget):
+        self.manager._config.config = self.manager._config.load_data()
+        self.manager._config.load_scenes(update=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
