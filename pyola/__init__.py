@@ -162,6 +162,8 @@ class MyWindow(Gtk.Window):
             chan_slider.set_halign(Gtk.Align.CENTER)
             chan_slider.set_vexpand(True)
             chan_slider.set_sensitive(False)
+            for i in range(0, 2551, 250):
+                chan_slider.add_mark(int(i / 10.0), Gtk.PositionType.LEFT, str(int(i / 10.0)))
             fixture.sliders[chan] = chan_slider
             chan_checkbox = Gtk.CheckButton()
             chan_checkbox.set_halign(Gtk.Align.CENTER)
@@ -173,7 +175,6 @@ class MyWindow(Gtk.Window):
             chan_vbox.add(chan_checkbox)
             chan_vbox.add(chan_label)
             fixture_hbox.add(chan_vbox)
-            #import pdb; pdb.set_trace()
 
         notebook.append_page(fixture_hbox, fixture_label)
 
