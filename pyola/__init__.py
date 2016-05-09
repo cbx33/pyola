@@ -145,6 +145,7 @@ class MyWindow(Gtk.Window):
             chan_label = Gtk.Label(chan)
             chan_label.set_halign(Gtk.Align.CENTER)
             chan_label.set_valign(Gtk.Align.END)
+            chan_label.set_vexpand(False)
             chan_vbox = Gtk.VBox()
             chan_vbox.set_homogeneous(False)
             # a vertical scale
@@ -168,6 +169,7 @@ class MyWindow(Gtk.Window):
             chan_checkbox = Gtk.CheckButton()
             chan_checkbox.set_halign(Gtk.Align.CENTER)
             chan_checkbox.set_valign(Gtk.Align.END)
+            chan_checkbox.set_vexpand(False)
             chan_checkbox.connect("toggled", self.chan_toggled, fixture, chan, chan_slider)
             fixture_label = Gtk.Label(fixture.name)
             fixture_label.set_halign(Gtk.Align.CENTER)
