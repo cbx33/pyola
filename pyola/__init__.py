@@ -20,7 +20,8 @@ wrapper = ClientWrapper()
 
 def DmxSent(state):
     if not state.Succeeded():
-        wrapper.Stop()
+        print "We did not succeed this time"
+        # wrapper.Stop()
 
 
 class RatBag(ServerAdapter):
@@ -76,7 +77,10 @@ class Manager(object):
                     value = int(self.fixtures[fixture.name].sliders[chan].get_value())
                 chan_value = self.fixtures[fixture.name].chans[chan]
                 rdata[fixture.start_address + chan_value - 2] = value
-        wrapper.Client().SendDmx(1, rdata, DmxSent)
+        try:
+            wrapper.Client().SendDmx(1, rdata, DmxSent)
+        except:
+            pass
         GObject.timeout_add(10, self.run)
 
 
@@ -186,7 +190,8 @@ class MyWindow(Gtk.Window):
         notebook.append_page(fixture_hbox, fixture_label)
 
     def chan_slider_moved(self, widget, fixture, chan):
-        print fixture, chan
+        # print fixture, chan
+        pass
 
     def chan_toggled(self, widget, fixture, chan, chan_slider):
         chan_slider.set_sensitive(widget.get_active())
