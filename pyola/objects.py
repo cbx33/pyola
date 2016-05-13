@@ -3,6 +3,8 @@ import time
 import math
 import scipy.interpolate
 import random
+import cwiid
+import threading
 
 
 def cap(value):
@@ -25,6 +27,30 @@ def get_val_from_const(value, constants, chan=None):
         return value
 
 
+class WiiManager(object):
+    def __init__(self):
+        self.wm = None
+
+    def run(self):
+        print "Press 1+2"
+        self.wm = cwiid.Wiimote()
+        self.wm.rpt_mode = cwiid.RPT_ACC
+        self.wm.led = cwiid.LED2_ON
+
+    @property
+    def state(self):
+        if self.wm:
+            return self.wm.state
+        else:
+            return 0
+
+
+wii = WiiManager()
+wii_thread = threading.Thread(target=wii.run)
+wii_thread.daemon = True
+wii_thread.start()
+
+
 class FixtureType(object):
     def __init__(self, name, address_length, chans):
         self.name = name
@@ -40,6 +66,10 @@ class Fixture(object):
         self.chans = chans
         self.values = {}
         self.reset_values()
+        self.override = {}
+        self.sliders = {}
+        for chan in self.chans:
+            self.override[chan] = None
 
     def reset_values(self):
         for chan in self.chans:
@@ -166,6 +196,25 @@ class FlashingModifier(Modifier):
         return val
 
 
+class WiiModifier(Modifier):
+    def __init__(self, *args, **kwargs):
+        super(WiiModifier, self).__init__(*args, **kwargs)
+        self.chan = self.data.get('chan', None)
+
+    def calculate(self):
+        if self.chan == 1:
+            num = wii.state['acc'][1]
+            num = 255 - num - 127
+            num = num / 26.0
+            num = num * 255
+        if self.chan == 0:
+            num = wii.state['acc'][0]
+            num = 255 - num - 102
+            num = num / 51.0
+            num = num * 255
+        return num
+
+
 class SineModifier(Modifier):
     def __init__(self, *args, **kwargs):
         super(SineModifier, self).__init__(*args, **kwargs)
@@ -273,5 +322,6 @@ mod_map = {
     'cos': CosineModifier,
     'waypoint': WaypointModifier,
     'immediate': FlatWaypointModifier,
-    'flasher': FlashingModifier
+    'flasher': FlashingModifier,
+    'wii': WiiModifier
 }
