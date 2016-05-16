@@ -1,5 +1,6 @@
 from conf import Config
-from objects import FadeScene, cap
+from objects import FadeScene
+from modifiers.utils import cap
 import array
 from ola.ClientWrapper import ClientWrapper
 from bottle import run, route, ServerAdapter
@@ -16,13 +17,10 @@ import json
 import argparse
 import time
 
-#wrapper = ClientWrapper()
-
 
 def DmxSent(state):
     if not state.Succeeded():
         print "We did not succeed this time"
-        # wrapper.Stop()
 
 
 class RatBag(ServerAdapter):
@@ -38,8 +36,12 @@ class RatBag(ServerAdapter):
 
 
 class Manager(object):
-    def __init__(self, config_file):
-        self.wrapper = ClientWrapper()
+    def __init__(self, config_file, no_olad):
+        self.no_olad = no_olad
+        if not self.no_olad:
+            self.wrapper = ClientWrapper()
+        else:
+            self.wrapper = None
         self._config = Config(config_file, self)
         self.fixture_types = self._config.load_fixture_types()
         self.constants = self._config.load_constants()
@@ -79,14 +81,15 @@ class Manager(object):
                     value = int(self.fixtures[fixture.name].sliders[chan].get_value())
                 chan_value = self.fixtures[fixture.name].chans[chan]
                 rdata[fixture.start_address + chan_value - 2] = value
-        try:
-            self.wrapper.Client().SendDmx(1, rdata, DmxSent)
-        except:
-            st = time.time()
-            self.wrapper.Stop()
-            self.wrapper = ClientWrapper()
-            print "We had to reset"
-            print time.time() - st
+        if not self.no_olad:
+            try:
+                self.wrapper.Client().SendDmx(1, rdata, DmxSent)
+            except:
+                st = time.time()
+                self.wrapper.Stop()
+                self.wrapper = ClientWrapper()
+                print "We had to reset"
+                print time.time() - st
         GObject.timeout_add(10, self.run)
 
 
@@ -232,9 +235,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         epilog=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('--config-file', help='config file', required=True)
+    parser.add_argument(
+        '--no-olad', action='store_true', default=False,
+        help='Disable olad (for testing)')
     args = parser.parse_args()
 
-    manager = Manager(args.config_file)
+    manager = Manager(args.config_file, args.no_olad)
 
     _server = RatBag(host='127.0.0.1', port='8000')
     server_thread = threading.Thread(target=run, kwargs=dict(server=_server, quiet=True))

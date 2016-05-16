@@ -1,7 +1,9 @@
 from copy import deepcopy
 import yaml
 
-from objects import Scene, Fixture, FixtureType, mod_map, get_val_from_const
+from objects import Scene, Fixture, FixtureType
+from modifiers import mod_map
+from modifiers.utils import get_val_from_const
 
 
 CONFIG_FILE = "conf.yaml"
