@@ -138,7 +138,7 @@ class MyWindow(Gtk.Window):
             "onDeleteWindow": Gtk.main_quit,
             "onButtonPressed": self.on_button_clicked,
             "onConfigReload": self.on_config_reload,
-            "testHandler": self.bingbong
+            "onScrollNotebook": self.on_scroll_notebook
         }
         self.builder.connect_signals(handlers)
 
@@ -237,7 +237,7 @@ class MyWindow(Gtk.Window):
         self.manager._config.config = self.manager._config.load_data()
         self.manager._config.load_scenes(update=True)
 
-    def bingbong(self, widget, e):
+    def on_scroll_notebook(self, widget, e):
         if e.get_scroll_deltas()[2] == 1.0:
             widget.next_page()
         else:

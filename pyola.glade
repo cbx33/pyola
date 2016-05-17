@@ -166,7 +166,7 @@
             <property name="tab_pos">bottom</property>
             <property name="scrollable">True</property>
             <property name="enable_popup">True</property>
-            <signal name="scroll-event" handler="testHandler" swapped="no"/>
+            <signal name="scroll-event" handler="onScrollNotebook" swapped="no"/>
           </object>
           <packing>
             <property name="expand">True</property>
