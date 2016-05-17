@@ -97,7 +97,12 @@ class Manager(object):
 def getter():
     ddict = {}
     for fixture_name, fixture in manager.fixtures.iteritems():
-        ddict[fixture_name] = fixture.values
+        vals = {}
+        for chan, value in fixture.values.iteritems():
+            if fixture.override.get(chan, None):
+                value = int(fixture.sliders[chan].get_value())
+            vals[chan] = value
+        ddict[fixture_name] = vals
     return json.dumps(ddict)
 
 
