@@ -137,7 +137,8 @@ class MyWindow(Gtk.Window):
         handlers = {
             "onDeleteWindow": Gtk.main_quit,
             "onButtonPressed": self.on_button_clicked,
-            "onConfigReload": self.on_config_reload
+            "onConfigReload": self.on_config_reload,
+            "testHandler": self.bingbong
         }
         self.builder.connect_signals(handlers)
 
@@ -235,6 +236,12 @@ class MyWindow(Gtk.Window):
     def on_config_reload(self, widget):
         self.manager._config.config = self.manager._config.load_data()
         self.manager._config.load_scenes(update=True)
+
+    def bingbong(self, widget, e):
+        if e.get_scroll_deltas()[2] == 1.0:
+            widget.next_page()
+        else:
+            widget.prev_page()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
