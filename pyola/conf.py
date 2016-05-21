@@ -102,6 +102,8 @@ class Config(object):
             else:
                 scene = Scene(scene_name, self.manager, data)
                 scenes[scene_name] = scene
+            if "default_trans" in data:
+                scene.default_trans = data['default_trans']
             for fixture, fvalues in data['fixtures'].iteritems():
                 new_values = {}
                 data2 = deepcopy(fvalues)

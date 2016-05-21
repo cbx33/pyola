@@ -138,7 +138,8 @@ class MyWindow(Gtk.Window):
             "onDeleteWindow": Gtk.main_quit,
             "onButtonPressed": self.on_button_clicked,
             "onConfigReload": self.on_config_reload,
-            "onScrollNotebook": self.on_scroll_notebook
+            "onScrollNotebook": self.on_scroll_notebook,
+            "onDestinationChanged": self.on_dest_changed
         }
         self.builder.connect_signals(handlers)
 
@@ -232,6 +233,16 @@ class MyWindow(Gtk.Window):
             self.manager.scenes[destination_s],
             timeout)
         manager.set_scene(trans_scene)
+
+    def on_dest_changed(self, widget):
+        destination = self.builder.get_object('destination')
+        tree_iter = destination.get_active_iter()
+        if tree_iter:
+            model = destination.get_model()
+            destination_s = model[tree_iter][0]
+        scene = self.manager.scenes[destination_s]
+        if scene.default_trans:
+            self.builder.get_object('timeout').set_text(str(scene.default_trans))
 
     def on_config_reload(self, widget):
         self.manager._config.config = self.manager._config.load_data()

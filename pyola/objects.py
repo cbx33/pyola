@@ -36,6 +36,7 @@ class Scene(object):
         self.start_time = 0
         self.base_fixtures = {}
         self.timeout = self.raw_data.get('timeout', None)
+        self.default_trans = None
 
     def add_fixture(self, fixture, values):
         self.base_fixtures[fixture] = values
