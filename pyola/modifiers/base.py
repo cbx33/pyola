@@ -16,6 +16,12 @@ class Modifier(object):
         if self.mode == "global":
             self.fixtures = data['fixtures']
 
+    def play(self):
+        pass
+
+    def stop(self):
+        pass
+
     @property
     def current_time(self):
         return time.time() - self.start_time

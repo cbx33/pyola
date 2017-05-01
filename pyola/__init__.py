@@ -18,6 +18,9 @@ import argparse
 import time
 
 
+GObject.threads_init()
+
+
 def DmxSent(state):
     if not state.Succeeded():
         print "We did not succeed this time"

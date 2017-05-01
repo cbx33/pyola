@@ -41,6 +41,13 @@ class Scene(object):
     def add_fixture(self, fixture, values):
         self.base_fixtures[fixture] = values
 
+    def stop(self):
+        if hasattr(self, 'base_fixtures'):
+            for fixture, values in self.base_fixtures.iteritems():
+                for chan, value in values.iteritems():
+                    if not isinstance(value, int):
+                        value.stop()
+
     def reset(self):
         print "RESETTING"
         self.start_time = time.time()
@@ -52,6 +59,7 @@ class Scene(object):
                 for chan, value in values.iteritems():
                     if not isinstance(value, int):
                         value.start_time = self.start_time
+                        value.play()
 
     @property
     def fixtures(self):
@@ -93,6 +101,7 @@ class FadeScene(TransitionScene):
     def fixtures(self):
         if time.time() - self.start_time > self.timeout:
             self.manager.set_scene(self.end_scene, reset=False)
+            self.start_scene.stop()
         else:
             combined_fixtures = {}
             for fixture, fixture_values in self.start_scene.fixtures.iteritems():
