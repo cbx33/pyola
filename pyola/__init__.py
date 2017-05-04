@@ -47,7 +47,7 @@ class Manager(object):
         else:
             self.wrapper = None
         self._config = Config(config_file, self)
-        self._conf_dir = os.path.split(config_file)[0]
+        self._conf_dir = os.path.split(os.path.abspath(config_file))[0]
         self.fixture_types = self._config.load_fixture_types()
         self.constants = self._config.load_constants()
         self.fixtures = self._config.load_fixtures()
