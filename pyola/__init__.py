@@ -115,7 +115,10 @@ class MyWindow(Gtk.Window):
     def __init__(self, manager):
         self.manager = manager
         self.builder = Gtk.Builder()
-        self.builder.add_from_file("pyola.glade")
+        dir = os.path.split(os.path.abspath(__file__))[0]
+        print dir
+        print os.path.abspath(__file__)
+        self.builder.add_from_file(os.path.join(dir, "pyola.glade"))
 
         window = self.builder.get_object("window1")
         window.set_default_size(800, 600)
