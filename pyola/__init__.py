@@ -41,6 +41,7 @@ class RatBag(ServerAdapter):
 
 class Manager(object):
     def __init__(self, config_file, no_olad):
+        self.auto_cue = False
         self.no_olad = no_olad
         if not self.no_olad:
             self.wrapper = ClientWrapper()
@@ -65,6 +66,24 @@ class Manager(object):
             for i, item in enumerate(model):
                 if item[0] == self.current_scene.name:
                     source.set_active(i)
+                    break
+        if self.auto_cue:
+            dest = self.win.builder.get_object('destination')
+            model = dest.get_model()
+            for i, item in enumerate(model):
+                if item[0] == self.current_scene.name:
+                    dest.set_active(i+1)
+                    break
+        print dir(scene)
+        if scene.auto_advance:
+            trans_scene = FadeScene(
+                "fade",
+                self,
+                self.scenes[self.current_scene.name],
+                self.scenes[scene.auto_advance['scene']],
+                self.scenes[scene.auto_advance['scene']].raw_data.get('default_trans', 0))
+            GObject.timeout_add(scene.auto_advance['time'] * 1000, self.set_scene, trans_scene)
+        print self.current_scene.name
 
     def run(self):
         rdata = array.array('B')
@@ -147,7 +166,8 @@ class MyWindow(Gtk.Window):
             "onButtonPressed": self.on_button_clicked,
             "onConfigReload": self.on_config_reload,
             "onScrollNotebook": self.on_scroll_notebook,
-            "onDestinationChanged": self.on_dest_changed
+            "onDestinationChanged": self.on_dest_changed,
+            "onAutoFollowToggled": self.on_auto_follow_toggled
         }
         self.builder.connect_signals(handlers)
 
@@ -261,6 +281,9 @@ class MyWindow(Gtk.Window):
             widget.next_page()
         else:
             widget.prev_page()
+
+    def on_auto_follow_toggled(self, widget):
+        self.manager.auto_cue = widget.get_active()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

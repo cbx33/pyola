@@ -36,6 +36,7 @@ class Scene(object):
         self.start_time = 0
         self.base_fixtures = {}
         self.timeout = self.raw_data.get('timeout', None)
+        self.auto_advance = self.raw_data.get('auto_advance', {})
         self.default_trans = None
 
     def add_fixture(self, fixture, values):
@@ -87,6 +88,7 @@ class Scene(object):
 
 class TransitionScene(Scene):
     def __init__(self, name, manager, start_scene, end_scene, timeout=30):
+        self.auto_advance = {}
         self.name = name
         self.manager = manager
         self.start_scene = start_scene
