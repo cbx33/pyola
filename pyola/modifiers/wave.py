@@ -1,3 +1,4 @@
+import os.path
 from scipy.io import wavfile
 from base import Modifier
 from utils import get_val_from_const
@@ -15,6 +16,9 @@ class WaveModifier(Modifier):
         super(WaveModifier, self).__init__(*args, **kwargs)
         self.master = self.data.get('master', False)
         self.filename = self.data.get('filename', None)
+        if "/" not in self.filename:
+            self.filename = os.path.join(self.manager._conf_dir, self.filename)
+        self.mode = self.data.get('mode', None)
         self.amp = get_val_from_const(self.data.get('amp', None), self.manager.constants)
         self.name = self.data.get('name', None)
         if self.name not in filedata:
@@ -37,7 +41,13 @@ class WaveModifier(Modifier):
             self.pl.set_state(Gst.State.PAUSED)
 
     def calculate(self):
-        idx = int(self.current_time * filedata[self.name][0])
-        if idx > len(filedata[self.name][1]):
+        idx_st = int(self.current_time * filedata[self.name][0])
+        idx_en = int((self.current_time + .01) * filedata[self.name][0])
+        if idx_st > len(filedata[self.name][1]):
             return 0
-        return abs(filedata[self.name][1][idx][0] / MAX) * 255
+        if self.mode == 'average':
+            analysis = sum([abs(a[0]) for a in filedata[self.name][1][idx_st:idx_en]]) / (idx_en - idx_st)
+        elif self.mode == 'max':
+            analysis = max([abs(a[0]) for a in filedata[self.name][1][idx_st:idx_en]])
+
+        return abs(analysis / MAX) * 255

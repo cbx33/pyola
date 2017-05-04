@@ -5,6 +5,7 @@ import array
 from ola.ClientWrapper import ClientWrapper
 from bottle import run, route, ServerAdapter
 from waitress.server import create_server
+import os.path
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -46,6 +47,7 @@ class Manager(object):
         else:
             self.wrapper = None
         self._config = Config(config_file, self)
+        self._conf_dir = os.path.split(config_file)[0]
         self.fixture_types = self._config.load_fixture_types()
         self.constants = self._config.load_constants()
         self.fixtures = self._config.load_fixtures()
